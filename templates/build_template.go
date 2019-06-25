@@ -90,7 +90,7 @@ ENABLE_ATTESTATION=<% .EnableAttestation %>
 ATTESTATION_MAX_SPOT_PRICE=<% .AttestationMaxSpotPrice %>
 
 # opengapps
-ENABLE_GAPPS=<% .EnableGapps %>
+ENABLE_GAPPS=<% .EnableOpenGapps %>
 
 # aws settings
 AWS_ATTESTATION_BUCKET="${STACK_NAME}-attestation"
@@ -641,7 +641,7 @@ aosp_repo_modifications() {
       <% if .EnableAttestation %>
       print "  <project path=\"external/Auditor\" name=\"platform_external_Auditor\" remote=\"github\" />";
       <% end %>
-      <% if .EnableGapps %>
+      <% if .EnableOpenGapps %>
       print "  <remote name=\"opengapps\" fetch=\"https://github.com/opengapps/\"  />";
       print "  <remote name=\"gitlab\" fetch=\"https://gitlab.opengapps.org/opengapps/\"  />";
       print "  <project path=\"vendor/opengapps/build\" name=\"aosp_build\" revision=\"master\" remote=\"opengapps\" />";
@@ -737,7 +737,7 @@ patch_aosp_removals() {
 
 # Add OpenGapps
 patch_add_opengapps() {
-  <% if .EnableGapps %>
+  <% if .EnableOpenGapps %>
     cd $BUILD_DIR/device/google/$DEVICE_FAMILY/
     sed -i "s/# PRODUCT_RESTRICT_VENDOR_FILES := all/PRODUCT_RESTRICT_VENDOR_FILES := false/g" aosp_$DEVICE.mk
     sed -i "/# limitations under the License./a GAPPS_VARIANT := pico" device.mk
