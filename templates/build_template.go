@@ -744,7 +744,7 @@ patch_add_opengapps() {
   <% if .EnableOpenGapps %>
     cd $BUILD_DIR/device/google/$DEVICE_FAMILY/
     sed -i "s/# PRODUCT_RESTRICT_VENDOR_FILES := all/PRODUCT_RESTRICT_VENDOR_FILES := false/g" aosp_$DEVICE.mk
-    sed -i "/# limitations under the License./a GAPPS_VARIANT := pico" device.mk
+    sed -i "/^# limitations under/{N;N;s/$/GAPPS_VARIANT := pico\n/}" device.mk
     echo -ne "\\n\$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)" >> device.mk
   <% end %>
 }
