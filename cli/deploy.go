@@ -234,7 +234,6 @@ var deployCmd = &cobra.Command{
 			EnableAttestation:       viper.GetBool("attestation-server"),
 			AttestationInstanceType: viper.GetString("attestation-instance-type"),
 			AttestationMaxSpotPrice: viper.GetString("attestation-max-price"),
-			EnableGapps:						 viper.GetBool("opengapps"),
 		})
 		if err != nil {
 			log.Fatal(err)

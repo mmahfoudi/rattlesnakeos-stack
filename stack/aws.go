@@ -73,7 +73,6 @@ type AWSStackConfig struct {
 	EnableAttestation       bool
 	AttestationMaxSpotPrice string
 	AttestationInstanceType string
-	EnableGapps							bool
 }
 
 type AWSStack struct {
