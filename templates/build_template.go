@@ -89,6 +89,9 @@ HOSTS_FILE=<% .HostsFile %>
 ENABLE_ATTESTATION=<% .EnableAttestation %>
 ATTESTATION_MAX_SPOT_PRICE=<% .AttestationMaxSpotPrice %>
 
+# opengapps
+ENABLE_GAPPS=<% .EnableGapps %>
+
 # aws settings
 AWS_ATTESTATION_BUCKET="${STACK_NAME}-attestation"
 AWS_KEYS_BUCKET="${STACK_NAME}-keys"
@@ -638,6 +641,14 @@ aosp_repo_modifications() {
       <% if .EnableAttestation %>
       print "  <project path=\"external/Auditor\" name=\"platform_external_Auditor\" remote=\"github\" />";
       <% end %>
+      <% if .EnableGapps %>
+      print "  <remote name=\"opengapps\" fetch=\"https://github.com/opengapps/\"  />";
+      print "  <remote name=\"gitlab\" fetch=\"https://gitlab.opengapps.org/opengapps/\"  />";
+      print "  <project path=\"vendor/opengapps/build\" name=\"aosp_build\" revision=\"master\" remote=\"opengapps\" />";
+      print "  <project path=\"vendor/opengapps/sources/all\" name=\"all\" clone-depth=\"1\" revision=\"master\" remote=\"gitlab\" />";
+      print "  <project path=\"vendor/opengapps/sources/arm\" name=\"arm\" clone-depth=\"1\" revision=\"master\" remote=\"gitlab\" />";
+      print "  <project path=\"vendor/opengapps/sources/arm64\" name=\"arm64\" clone-depth=\"1\" revision=\"master\" remote=\"gitlab\" />";
+      <% end %>
       print "  <project path=\"external/chromium\" name=\"platform_external_chromium\" remote=\"github\" />";
       print "  <project path=\"packages/apps/Updater\" name=\"platform_packages_apps_Updater\" remote=\"github\" />";
       print "  <project path=\"packages/apps/F-Droid\" name=\"fdroidclient\" remote=\"fdroid\" revision=\"refs/tags/" FDROID_CLIENT_VERSION "\" />";
@@ -686,6 +697,7 @@ setup_vendor() {
 apply_patches() {
   log_header ${FUNCNAME}
 
+  patch_add_opengapps
   patch_custom
   patch_aosp_removals
   patch_add_apps
@@ -721,6 +733,16 @@ patch_aosp_removals() {
     sed -i '/QuickSearchBox/d' ${mk_file}
   done
 
+}
+
+# Add OpenGapps
+patch_add_opengapps() {
+  <% if .EnableGapps %>
+    cd $BUILD_DIR/device/google/$DEVICE_FAMILY/
+    sed -i "s/# PRODUCT_RESTRICT_VENDOR_FILES := all/PRODUCT_RESTRICT_VENDOR_FILES := false/g" aosp_$DEVICE.mk
+    sed -i "/# limitations under the License./a GAPPS_VARIANT := pico" device.mk
+    echo -ne "\\n\$(call inherit-product, vendor/opengapps/build/opengapps-packages.mk)" >> device.mk
+  <% end %>
 }
 
 # TODO: most of this is fragile and unforgiving
@@ -805,7 +827,7 @@ patch_device_config() {
 
   sed -i 's@PRODUCT_MODEL := AOSP on crosshatch@PRODUCT_MODEL := Pixel 3 XL@' ${BUILD_DIR}/device/google/crosshatch/aosp_crosshatch.mk || true
   sed -i 's@PRODUCT_MODEL := AOSP on blueline@PRODUCT_MODEL := Pixel 3@' ${BUILD_DIR}/device/google/crosshatch/aosp_blueline.mk || true
-  
+
   sed -i 's@PRODUCT_MODEL := AOSP on bonito@PRODUCT_MODEL := Pixel 3a XL@' ${BUILD_DIR}/device/google/bonito/aosp_bonito.mk || true
   sed -i 's@PRODUCT_MODEL := AOSP on sargo@PRODUCT_MODEL := Pixel 3a@' ${BUILD_DIR}/device/google/bonito/aosp_sargo.mk || true
 }
