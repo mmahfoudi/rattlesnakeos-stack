@@ -70,6 +70,7 @@ type AWSStackConfig struct {
 	HostsFile               string
 	EncryptedKeys           bool
 	AMI                     string
+	EnableOpenGapps					bool
 	EnableAttestation       bool
 	AttestationMaxSpotPrice string
 	AttestationInstanceType string

@@ -19,7 +19,7 @@ const defaultInstanceRegions = "us-west-2,us-west-1,us-east-1,us-east-2"
 var name, region, email, device, sshKey, maxPrice, skipPrice, schedule string
 var instanceType, instanceRegions, hostsFile, chromiumVersion string
 var attestationMaxPrice, attestationInstanceType string
-var preventShutdown, ignoreVersionChecks, encryptedKeys, saveConfig, attestationServer bool
+var preventShutdown, ignoreVersionChecks, encryptedKeys, saveConfig, attestationServer, openGapps bool
 var patches = &stack.CustomPatches{}
 var scripts = &stack.CustomScripts{}
 var prebuilts = &stack.CustomPrebuilts{}
@@ -114,6 +114,8 @@ func init() {
 
 	flags.BoolVar(&attestationServer, "attestation-server", false, "deploys and configures a personal attestation server (Pixel 3/Pixel 3 XL only)")
 	viper.BindPFlag("attestation-server", flags.Lookup("attestation-server"))
+
+	flags.BoolVar(&openGapps, "opengapps", false, "add opengapps to build")
 
 	flags.StringVar(&attestationMaxPrice, "attestation-max-price", ".005",
 		"max ec2 spot instance price for attestation server. if this value is too low, you may not launch an instance.")
@@ -231,6 +233,7 @@ var deployCmd = &cobra.Command{
 			CustomManifestProjects:  manifestProjects,
 			PreventShutdown:         preventShutdown,
 			Version:                 version,
+			EnableOpenGapps:         viper.GetBool("opengapps"),
 			EnableAttestation:       viper.GetBool("attestation-server"),
 			AttestationInstanceType: viper.GetString("attestation-instance-type"),
 			AttestationMaxSpotPrice: viper.GetString("attestation-max-price"),

@@ -55,6 +55,11 @@ variable "attestation_max_spot_price" {
     default     = "<% .Config.AttestationMaxSpotPrice %>"
 }
 
+variable "enable_opengapps" {
+    description = "Whether to add Open Google Apps"
+    default     = "<% .Config.EnableOpenGapps %>"
+}
+
 ###################
 # Provider
 ###################
@@ -83,7 +88,7 @@ resource "aws_iam_role" "rattlesnake_ec2_role" {
 }
 EOF
 }
-  
+
 resource "aws_iam_role_policy" "rattlesnake_ec2_policy" {
     name = "${var.name}-ec2-policy"
     role = "${aws_iam_instance_profile.rattlesnake_ec2_role.id}"
